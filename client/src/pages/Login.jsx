@@ -1,11 +1,13 @@
-import { useState } from "react";
+import { useState, useContext } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import background_login from "../assets/background_login.jpg";
 import axios from "axios";
 import { toast } from "react-hot-toast";
+import { UserContext } from "../../context/userContext"; // Import UserContext
 
 const Login = () => {
   const navigate = useNavigate();
+  const { setUser } = useContext(UserContext); // Use the UserContext to set the user
   const [data, setData] = useState({
     email: "",
     password: "",
@@ -15,17 +17,20 @@ const Login = () => {
     e.preventDefault();
     const { email, password } = data;
     try {
-      const { data } = await axios.post("/login", {
+      const response = await axios.post("/login", {
         email,
         password,
       });
-      if (data.error) {
-        toast.error(data.error);
+      if (response.data.error) {
+        toast.error(response.data.error);
       } else {
-        setData({});
-        navigate("/dashboard");
+        setUser(response.data); // Update the user context with the logged-in user data
+        setData({ email: "", password: "" });
+        toast.success("Logged in successfully");
+        navigate("/dashboard"); // Navigate to the dashboard after login
       }
     } catch (err) {
+      toast.error("Login failed");
       console.log(err);
     }
   };
@@ -99,14 +104,14 @@ const Login = () => {
                 <p className="mt-6 text-xs text-gray-600 text-center">
                   I agree to abide by <br />
                   <Link
-                    to="termsOfService"
+                    to="/termsOfService"
                     className="border-b border-gray-500 border-dotted tracking-wide mr-1"
                   >
                     Terms of Service
                   </Link>
                   <span className="tracking-wide mx-1">and its</span>
                   <Link
-                    to="privacyPolicy"
+                    to="/privacyPolicy"
                     className="border-b border-gray-500 border-dotted ml-1"
                   >
                     Privacy Policy

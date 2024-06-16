@@ -2,28 +2,28 @@ import User from "../models/user.js";
 import { hashPassword, comparePassword } from "../helpers/auth.js";
 import jwt from "jsonwebtoken";
 
-//Test
+// Test
 export const test = (req, res) => {
   res.json("Test is working");
 };
 
-//Register Enpoint
+// Register Endpoint
 export const registerUser = async (req, res) => {
   try {
     const { name, email, password } = req.body;
-    //Check if name was entered
+    // Check if name was entered
     if (!name) {
       return res.json({
         error: "name is required",
       });
     }
-    //Check if password was entered
+    // Check if password was entered
     if (!password || password.length < 8) {
       return res.json({
-        error: "password is required and should be atleast 8 characters long",
+        error: "password is required and should be at least 8 characters long",
       });
     }
-    //Check email
+    // Check email
     const exist = await User.findOne({ email });
     if (exist) {
       return res.json({
@@ -44,12 +44,12 @@ export const registerUser = async (req, res) => {
   }
 };
 
-//Login Endpoint
+// Login Endpoint
 export const loginUser = async (req, res) => {
   try {
     const { email, password } = req.body;
 
-    //Check if user exists
+    // Check if user exists
     const user = await User.findOne({ email });
     if (!user) {
       return res.json({
@@ -57,7 +57,7 @@ export const loginUser = async (req, res) => {
       });
     }
 
-    //Check if password match
+    // Check if password matches
     const match = await comparePassword(password, user.password);
     if (match) {
       jwt.sign(
@@ -71,8 +71,7 @@ export const loginUser = async (req, res) => {
           res.cookie("token", token).json(user);
         }
       );
-    }
-    if (!match) {
+    } else {
       res.json({
         error: "Passwords do not match",
       });
@@ -82,14 +81,21 @@ export const loginUser = async (req, res) => {
   }
 };
 
-export const getProfile = (req, res) => {
+export const getProfile = async (req, res) => {
   const { token } = req.cookies;
   if (token) {
-    jwt.verify(token, process.env.JWT_SECRET, {}, (err, user) => {
+    jwt.verify(token, process.env.JWT_SECRET, {}, async (err, decoded) => {
       if (err) throw err;
+      const user = await User.findById(decoded.id);
+      console.log("User data:", user); // Add logging here
       res.json(user);
     });
   } else {
     res.json(null);
   }
+};
+
+export const logoutUser = (req, res) => {
+  res.clearCookie("token");
+  res.json({ message: "Logged out successfully" });
 };

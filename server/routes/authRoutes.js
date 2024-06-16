@@ -5,10 +5,10 @@ import {
   registerUser,
   loginUser,
   getProfile,
+  logoutUser,
 } from "../controllers/authController.js";
 const router = express.Router();
 
-// Apply CORS middleware to the router
 router.use(
   cors({
     credentials: true,
@@ -21,5 +21,6 @@ router.get("/", test);
 router.post("/register", registerUser);
 router.post("/login", loginUser);
 router.get("/profile", getProfile);
+router.post("/logout", logoutUser);
 
 export default router;

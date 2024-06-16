@@ -1,3 +1,4 @@
+// src/App.js
 import "./App.css";
 import { Routes, Route } from "react-router-dom";
 import Navbar from "./components/Navbar";
@@ -12,6 +13,7 @@ import { UserContextProvider } from "../context/userContext";
 import Dashboard from "./pages/Dashboard";
 import Contact from "./pages/Contact";
 import About from "./pages/About";
+import Logout from "./pages/Logout";
 
 axios.defaults.baseURL = "http://localhost:8000";
 axios.defaults.withCredentials = true;
@@ -26,6 +28,7 @@ function App() {
           <Route path="/" element={<Home />} />
           <Route path="/register" element={<Register />} />
           <Route path="/login" element={<Login />} />
+          <Route path="/logout" element={<Logout />} />
           <Route path="/privacyPolicy" element={<PrivacyPolicy />} />
           <Route path="/termsOfService" element={<TermsOfService />} />
           <Route path="/dashboard" element={<Dashboard />} />

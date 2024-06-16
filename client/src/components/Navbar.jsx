@@ -1,6 +1,8 @@
-import { useState } from "react";
+// src/components/Navbar.js
+import { useState, useContext } from "react";
 import { Link } from "react-router-dom";
 import { FaBookOpen, FaBars, FaTimes } from "react-icons/fa";
+import { UserContext } from "../../context/userContext";
 
 const Header = () => {
   const Links = [
@@ -9,6 +11,7 @@ const Header = () => {
     { name: "CONTACT", link: "/contact" },
   ];
   const [open, setOpen] = useState(false);
+  const { user } = useContext(UserContext);
 
   return (
     <div className="shadow-md w-full fixed top-0 left-0">
@@ -42,18 +45,29 @@ const Header = () => {
             </li>
           ))}
           <div className="md:flex md:items-center md:ml-8 ">
-            <Link
-              to="/login"
-              className="btn bg-green-600 hover:bg-green-400 text-white font-semibold px-3 py-1 rounded duration-500 mb-2 md:mr-4 md:mb-0"
-            >
-              Login
-            </Link>
-            <Link
-              to="/register"
-              className="btn bg-green-600 hover:bg-green-400 text-white font-semibold px-3 py-1 rounded duration-500"
-            >
-              Get Started
-            </Link>
+            {user ? (
+              <Link
+                to="/logout"
+                className="btn bg-green-600 hover:bg-green-400 text-white font-semibold px-3 py-1 rounded duration-500 mb-2 md:mr-4 md:mb-0"
+              >
+                Logout
+              </Link>
+            ) : (
+              <>
+                <Link
+                  to="/login"
+                  className="btn bg-green-600 hover:bg-green-400 text-white font-semibold px-3 py-1 rounded duration-500 mb-2 md:mr-4 md:mb-0"
+                >
+                  Login
+                </Link>
+                <Link
+                  to="/register"
+                  className="btn bg-green-600 hover:bg-green-400 text-white font-semibold px-3 py-1 rounded duration-500"
+                >
+                  Get Started
+                </Link>
+              </>
+            )}
           </div>
         </ul>
       </div>

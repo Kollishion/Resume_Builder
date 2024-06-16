@@ -1,6 +1,10 @@
+import { useContext } from "react";
 import hero from "../assets/hero.jpg";
+import { UserContext } from "../../context/userContext";
 
 const Home = () => {
+  const { user } = useContext(UserContext);
+
   return (
     <div className="mt-32">
       <div className="content flex">
@@ -14,9 +18,11 @@ const Home = () => {
             guides you through the process, ensuring you stand out from the
             crowd.
           </p>
-          <button className="btn bg-green-600 text-white font-semibold px-8 py-3 rounded duration-500">
-            Get Started
-          </button>
+          {!user && (
+            <button className="btn bg-green-600 text-white font-semibold px-8 py-3 rounded duration-500">
+              Get Started
+            </button>
+          )}
         </div>
         <div className="right w-1/2">
           <img src={hero} alt="boy" className="w-full h-full object-cover" />
