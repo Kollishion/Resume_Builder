@@ -4,10 +4,19 @@ import { UserContext } from "../../context/userContext";
 const Dashboard = () => {
   const { user } = useContext(UserContext);
 
+  // Check if user is null or undefined before rendering
+  if (!user) {
+    return <div>Loading...</div>;
+  }
+
+  // Destructure 'name' property from user object
+  const { name } = user;
+
   return (
-    <div className="bg-black w-full h-full flex items-center justify-center">
-      <h1>Dashboard</h1>
-      {!!user && <h1>{user.name}</h1>}
+    <div>
+      <div className="mt-24">
+        <h1>Welcome, {name}</h1>
+      </div>
     </div>
   );
 };

@@ -1,7 +1,7 @@
 import contact from "../assets/contact.jpg";
 const Contact = () => {
   return (
-    <div className="container mx-auto py-12">
+    <div className="container mx-auto py-12 flex items-center justify-center w-full min-h-screen">
       <div className="max-w-4xl mx-auto px-4">
         <h1 className="text-4xl font-bold text-center mb-8">Contact Us</h1>
         <div className="flex flex-col md:flex-row items-center justify-center mb-12">

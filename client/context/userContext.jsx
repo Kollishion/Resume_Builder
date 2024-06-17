@@ -6,7 +6,6 @@ export const UserContext = createContext({});
 
 export function UserContextProvider({ children }) {
   const [user, setUser] = useState(null);
-  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchProfile = async () => {
@@ -15,8 +14,6 @@ export function UserContextProvider({ children }) {
         setUser(data);
       } catch (err) {
         console.error("Error fetching profile: ", err);
-      } finally {
-        setLoading(false);
       }
     };
 
@@ -25,7 +22,7 @@ export function UserContextProvider({ children }) {
 
   return (
     <UserContext.Provider value={{ user, setUser }}>
-      {!loading && children}
+      {children}
     </UserContext.Provider>
   );
 }

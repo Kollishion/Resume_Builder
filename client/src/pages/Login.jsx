@@ -24,7 +24,7 @@ const Login = () => {
         setUser(response.data);
         setData({ email: "", password: "" });
         toast.success("Logged in successfully");
-        navigate("/userDashboard");
+        navigate("/dashboard");
       }
     } catch (err) {
       toast.error("Login failed");
