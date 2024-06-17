@@ -3,11 +3,11 @@ import { Link, useNavigate } from "react-router-dom";
 import background_login from "../assets/background_login.jpg";
 import axios from "axios";
 import { toast } from "react-hot-toast";
-import { UserContext } from "../../context/userContext"; // Import UserContext
+import { UserContext } from "../../context/userContext";
 
 const Login = () => {
   const navigate = useNavigate();
-  const { setUser } = useContext(UserContext); // Use the UserContext to set the user
+  const { setUser } = useContext(UserContext);
   const [data, setData] = useState({
     email: "",
     password: "",
@@ -17,21 +17,18 @@ const Login = () => {
     e.preventDefault();
     const { email, password } = data;
     try {
-      const response = await axios.post("/login", {
-        email,
-        password,
-      });
+      const response = await axios.post("/login", { email, password });
       if (response.data.error) {
         toast.error(response.data.error);
       } else {
-        setUser(response.data); // Update the user context with the logged-in user data
+        setUser(response.data);
         setData({ email: "", password: "" });
         toast.success("Logged in successfully");
-        navigate("/dashboard"); // Navigate to the dashboard after login
+        navigate("/userDashboard");
       }
     } catch (err) {
       toast.error("Login failed");
-      console.log(err);
+      console.log("Error during login: ", err);
     }
   };
 

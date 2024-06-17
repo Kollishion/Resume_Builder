@@ -52,7 +52,7 @@ export const loginUser = async (req, res) => {
     // Check if user exists
     const user = await User.findOne({ email });
     if (!user) {
-      return res.json({
+      return res.status(400).json({
         error: "No user found",
       });
     }
@@ -68,26 +68,29 @@ export const loginUser = async (req, res) => {
           if (err) {
             throw err;
           }
-          res.cookie("token", token).json(user);
+          res
+            .cookie("token", token, {
+              httpOnly: true,
+              secure: process.env.NODE_ENV === "production",
+            })
+            .json(user);
         }
       );
     } else {
-      res.json({
+      res.status(400).json({
         error: "Passwords do not match",
       });
     }
   } catch (err) {
     console.log(err);
+    res.status(500).json({ error: "Login failed" });
   }
 };
 
 export const getProfile = async (req, res) => {
   const { token } = req.cookies;
   if (token) {
-    jwt.verify(token, process.env.JWT_SECRET, {}, async (err, decoded) => {
-      if (err) throw err;
-      const user = await User.findById(decoded.id);
-      console.log("User data:", user); // Add logging here
+    jwt.verify(token, process.env.JWT_SECRET, {}, (err, user) => {
       res.json(user);
     });
   } else {

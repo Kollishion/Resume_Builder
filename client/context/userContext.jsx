@@ -6,21 +6,26 @@ export const UserContext = createContext({});
 
 export function UserContextProvider({ children }) {
   const [user, setUser] = useState(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    axios
-      .get("/profile")
-      .then(({ data }) => {
+    const fetchProfile = async () => {
+      try {
+        const { data } = await axios.get("/profile");
         setUser(data);
-      })
-      .catch((err) => {
-        console.log(err);
-      });
+      } catch (err) {
+        console.error("Error fetching profile: ", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchProfile();
   }, []);
 
   return (
     <UserContext.Provider value={{ user, setUser }}>
-      {children}
+      {!loading && children}
     </UserContext.Provider>
   );
 }

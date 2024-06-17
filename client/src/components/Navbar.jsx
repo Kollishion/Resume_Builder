@@ -44,7 +44,7 @@ const Header = () => {
               </Link>
             </li>
           ))}
-          <div className="md:flex md:items-center md:ml-8 ">
+          <div className="md:flex md:items-center md:ml-8">
             {user ? (
               <Link
                 to="/logout"

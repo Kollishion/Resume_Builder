@@ -1,6 +1,7 @@
 import { useContext } from "react";
 import hero from "../assets/hero.jpg";
 import { UserContext } from "../../context/userContext";
+import { Link } from "react-router-dom";
 
 const Home = () => {
   const { user } = useContext(UserContext);
@@ -20,7 +21,12 @@ const Home = () => {
           </p>
           {!user && (
             <button className="btn bg-green-600 text-white font-semibold px-8 py-3 rounded duration-500">
-              Get Started
+              <Link
+                to="/register"
+                className="btn bg-green-600 hover:bg-green-400 text-white font-semibold px-3 py-1 rounded duration-500"
+              >
+                Get Started
+              </Link>
             </button>
           )}
         </div>
