@@ -1,4 +1,6 @@
 import { useState } from "react";
+import html2canvas from "html2canvas";
+import jsPDF from "jspdf";
 
 const Template_1 = () => {
   const [aboutMe, setAboutMe] = useState(
@@ -39,6 +41,7 @@ const Template_1 = () => {
     address: "123 Main St, City, Country",
     phone: "+123 456 7890",
   });
+  const [visibilityButton, setVisibilityButton] = useState(true);
 
   const handleEdit = (section, value) => {
     switch (section) {
@@ -65,113 +68,138 @@ const Template_1 = () => {
     }
   };
 
-  const handleDownload = () => {
-    const resumeText = `
-    About Me:
-    ${aboutMe}
-
-    Education:
-    ${education
-      .map((edu, index) => `${index + 1}. ${edu.degree}, ${edu.university}`)
-      .join("\n")}
-
-    Work Experience:
-    ${workExperience
-      .map(
-        (job, index) =>
-          `${index + 1}. ${job.jobTitle}, ${job.company} - ${job.description}`
-      )
-      .join("\n")}
-
-    References:
-    ${references
-      .map((ref, index) => `${index + 1}. ${ref.name}, ${ref.position}`)
-      .join("\n")}
-
-    Software Skills:
-    ${softwareSkills.join(", ")}
-
-    Contact Info:
-    Email: ${contactInfo.email}
-    Portfolio: ${contactInfo.portfolio}
-    Address: ${contactInfo.address}
-    Phone: ${contactInfo.phone}
-    `;
-
-    const blob = new Blob([resumeText], { type: "text/plain" });
-    const link = document.createElement("a");
-    link.href = URL.createObjectURL(blob);
-    link.download = "resume.txt";
-    link.click();
+  const handleBlur = (e, section, key, index = null) => {
+    const updatedValue = e.target.innerText;
+    if (index !== null) {
+      handleEdit(
+        section,
+        key.map((item, idx) => (idx === index ? updatedValue : item))
+      );
+    } else if (typeof key === "string") {
+      handleEdit(section, { ...contactInfo, [key]: updatedValue });
+    } else {
+      handleEdit(section, updatedValue);
+    }
   };
+
+  const handleDownloadPDF = () => {
+    setVisibilityButton(false);
+    setTimeout(() => {
+      const resumeElement = document.querySelector(".resume");
+      if (resumeElement) {
+        html2canvas(resumeElement).then((canvas) => {
+          const imgData = canvas.toDataURL("image/png");
+          const pdf = new jsPDF("p", "mm", "a4");
+          const imgWidth = 210; // A4 width in mm
+          const imgHeight = (canvas.height * imgWidth) / canvas.width;
+          pdf.addImage(imgData, "PNG", 0, 0, imgWidth, imgHeight);
+          pdf.save("resume.pdf");
+          setVisibilityButton(true);
+        });
+      } else {
+        console.error("Resume element not found!");
+        setVisibilityButton(true);
+      }
+    }, 0);
+  };
+
+  const handleDownloadPNG = () => {
+    setVisibilityButton(false);
+    setTimeout(() => {
+      const resumeElement = document.querySelector(".resume");
+      if (resumeElement) {
+        html2canvas(resumeElement).then((canvas) => {
+          const imgData = canvas.toDataURL("image/png");
+          const link = document.createElement("a");
+          link.href = imgData;
+          link.download = "resume.png";
+          link.click();
+          setVisibilityButton(true);
+        });
+      } else {
+        console.error("Resume element not found!");
+      }
+    }, 0);
+  };
+
   return (
-    <div className="resume">
-      <header>
+    <div className="max-w-3xl mx-auto my-10 p-5 bg-white border border-gray-300 shadow-md font-sans resume">
+      <header className="text-center">
         <h1
           contentEditable="true"
-          onBlur={(e) => handleEdit("headerTitle", e.target.innerText)}
+          onBlur={(e) => handleBlur(e, "headerTitle", aboutMe)}
+          className="text-2xl text-blue-600"
         >
           John Doe
         </h1>
         <p
           contentEditable="true"
-          onBlur={(e) => handleEdit("headerSubtitle", e.target.innerText)}
+          onBlur={(e) =>
+            handleBlur(e, "headerSubtitle", "Web Developer & Designer")
+          }
+          className="text-gray-600"
         >
           Web Developer & Designer
         </p>
       </header>
-      <main>
-        <section id="about-me">
+      <main className="mt-5">
+        <section id="about-me" className="mb-5">
           <h2
             contentEditable="true"
-            onBlur={(e) => handleEdit("aboutMe", e.target.innerText)}
+            onBlur={(e) => handleBlur(e, "aboutMe", aboutMe)}
+            className="text-xl text-blue-600"
           >
             About Me
           </h2>
           <p
             contentEditable="true"
-            onBlur={(e) => handleEdit("aboutMe", e.target.innerText)}
+            onBlur={(e) => handleBlur(e, "aboutMe", aboutMe)}
           >
             {aboutMe}
           </p>
         </section>
-        <section id="education">
+        <section id="education" className="mb-5">
           <h2
             contentEditable="true"
-            onBlur={(e) => handleEdit("education", e.target.innerText)}
+            onBlur={(e) => handleBlur(e, "education", education)}
+            className="text-xl text-blue-600"
           >
             Education
           </h2>
-          <ul>
+          <ul className="list-none p-0 m-0">
             {education.map((edu, index) => (
-              <li key={index}>
+              <li key={index} className="mb-2">
                 <h3
                   contentEditable="true"
                   onBlur={(e) =>
-                    handleEdit(
+                    handleBlur(
+                      e,
                       "education",
-                      education.map((edu, idx) =>
+                      education.map((item, idx) =>
                         idx === index
-                          ? { ...edu, degree: e.target.innerText }
-                          : edu
+                          ? { ...item, degree: e.target.innerText }
+                          : item
                       )
                     )
                   }
+                  className="text-lg text-blue-600"
                 >
                   {edu.degree}
                 </h3>
                 <p
                   contentEditable="true"
                   onBlur={(e) =>
-                    handleEdit(
+                    handleBlur(
+                      e,
                       "education",
-                      education.map((edu, idx) =>
+                      education.map((item, idx) =>
                         idx === index
-                          ? { ...edu, university: e.target.innerText }
-                          : edu
+                          ? { ...item, university: e.target.innerText }
+                          : item
                       )
                     )
                   }
+                  className="text-gray-600"
                 >
                   {edu.university}
                 </p>
@@ -179,58 +207,65 @@ const Template_1 = () => {
             ))}
           </ul>
         </section>
-        <section id="work-experience">
+        <section id="work-experience" className="mb-5">
           <h2
             contentEditable="true"
-            onBlur={(e) => handleEdit("workExperience", e.target.innerText)}
+            onBlur={(e) => handleBlur(e, "workExperience", workExperience)}
+            className="text-xl text-blue-600"
           >
             Work Experience
           </h2>
-          <ul>
+          <ul className="list-none p-0 m-0">
             {workExperience.map((job, index) => (
-              <li key={index}>
+              <li key={index} className="mb-2">
                 <h3
                   contentEditable="true"
                   onBlur={(e) =>
-                    handleEdit(
+                    handleBlur(
+                      e,
                       "workExperience",
-                      workExperience.map((job, idx) =>
+                      workExperience.map((item, idx) =>
                         idx === index
-                          ? { ...job, jobTitle: e.target.innerText }
-                          : job
+                          ? { ...item, jobTitle: e.target.innerText }
+                          : item
                       )
                     )
                   }
+                  className="text-lg text-blue-600"
                 >
                   {job.jobTitle}
                 </h3>
                 <p
                   contentEditable="true"
                   onBlur={(e) =>
-                    handleEdit(
+                    handleBlur(
+                      e,
                       "workExperience",
-                      workExperience.map((job, idx) =>
+                      workExperience.map((item, idx) =>
                         idx === index
-                          ? { ...job, company: e.target.innerText }
-                          : job
+                          ? { ...item, company: e.target.innerText }
+                          : item
                       )
                     )
                   }
+                  className="text-gray-600"
                 >
                   {job.company}
                 </p>
                 <p
                   contentEditable="true"
                   onBlur={(e) =>
-                    handleEdit(
+                    handleBlur(
+                      e,
                       "workExperience",
-                      workExperience.map((job, idx) =>
+                      workExperience.map((item, idx) =>
                         idx === index
-                          ? { ...job, description: e.target.innerText }
-                          : job
+                          ? { ...item, description: e.target.innerText }
+                          : item
                       )
                     )
                   }
+                  className="text-gray-600"
                 >
                   {job.description}
                 </p>
@@ -238,43 +273,48 @@ const Template_1 = () => {
             ))}
           </ul>
         </section>
-        <section id="references">
+        <section id="references" className="mb-5">
           <h2
             contentEditable="true"
-            onBlur={(e) => handleEdit("references", e.target.innerText)}
+            onBlur={(e) => handleBlur(e, "references", references)}
+            className="text-xl text-blue-600"
           >
             References
           </h2>
-          <ul>
+          <ul className="list-none p-0 m-0">
             {references.map((ref, index) => (
-              <li key={index}>
+              <li key={index} className="mb-2">
                 <h3
                   contentEditable="true"
                   onBlur={(e) =>
-                    handleEdit(
+                    handleBlur(
+                      e,
                       "references",
-                      references.map((ref, idx) =>
+                      references.map((item, idx) =>
                         idx === index
-                          ? { ...ref, name: e.target.innerText }
-                          : ref
+                          ? { ...item, name: e.target.innerText }
+                          : item
                       )
                     )
                   }
+                  className="text-lg text-blue-600"
                 >
                   {ref.name}
                 </h3>
                 <p
                   contentEditable="true"
                   onBlur={(e) =>
-                    handleEdit(
+                    handleBlur(
+                      e,
                       "references",
-                      references.map((ref, idx) =>
+                      references.map((item, idx) =>
                         idx === index
-                          ? { ...ref, position: e.target.innerText }
-                          : ref
+                          ? { ...item, position: e.target.innerText }
+                          : item
                       )
                     )
                   }
+                  className="text-gray-600"
                 >
                   {ref.position}
                 </p>
@@ -282,26 +322,29 @@ const Template_1 = () => {
             ))}
           </ul>
         </section>
-        <section id="software-skills">
+        <section id="software-skills" className="mb-5">
           <h2
             contentEditable="true"
-            onBlur={(e) => handleEdit("softwareSkills", e.target.innerText)}
+            onBlur={(e) => handleBlur(e, "softwareSkills", softwareSkills)}
+            className="text-xl text-blue-600"
           >
             Software Skills
           </h2>
-          <ul>
+          <ul className="list-none p-0 m-0">
             {softwareSkills.map((skill, index) => (
-              <li key={index}>
+              <li key={index} className="mb-2">
                 <p
                   contentEditable="true"
                   onBlur={(e) =>
-                    handleEdit(
+                    handleBlur(
+                      e,
                       "softwareSkills",
-                      softwareSkills.map((skill, idx) =>
-                        idx === index ? e.target.innerText : skill
+                      softwareSkills.map((item, idx) =>
+                        idx === index ? e.target.innerText : item
                       )
                     )
                   }
+                  className="text-gray-600"
                 >
                   {skill}
                 </p>
@@ -309,48 +352,66 @@ const Template_1 = () => {
             ))}
           </ul>
         </section>
-        <section id="contact-info">
+        <section id="contact-info" className="mb-5">
           <h2
             contentEditable="true"
-            onBlur={(e) => handleEdit("contactInfo", e.target.innerText)}
+            onBlur={(e) => handleBlur(e, "contactInfo", contactInfo)}
+            className="text-xl text-blue-600"
           >
             Contact Info
           </h2>
-          <ul>
+          <ul className="list-none p-0 m-0">
             <li>
-              <a href={`mailto:${contactInfo.email}`}>{contactInfo.email}</a>
-            </li>
-            <li>
-              <a href={contactInfo.portfolio} target="_blank">
-                Portfolio
+              <a href={`mailto:${contactInfo.email}`} className="text-blue-500">
+                {contactInfo.email}
               </a>
             </li>
-            <li
-              contentEditable="true"
-              onBlur={(e) =>
-                handleEdit("contactInfo", {
-                  ...contactInfo,
-                  address: e.target.innerText,
-                })
-              }
-            >
-              {contactInfo.address}
+            <li>
+              <a href={contactInfo.portfolio} className="text-blue-500">
+                {contactInfo.portfolio}
+              </a>
             </li>
-            <li
-              contentEditable="true"
-              onBlur={(e) =>
-                handleEdit("contactInfo", {
-                  ...contactInfo,
-                  phone: e.target.innerText,
-                })
-              }
-            >
-              {contactInfo.phone}
+            <li>
+              <p
+                contentEditable="true"
+                onBlur={(e) =>
+                  handleBlur(e, "contactInfo", contactInfo, "address")
+                }
+                className="text-gray-600"
+              >
+                {contactInfo.address}
+              </p>
+            </li>
+            <li>
+              <p
+                contentEditable="true"
+                onBlur={(e) =>
+                  handleBlur(e, "contactInfo", contactInfo, "phone")
+                }
+                className="text-gray-600"
+              >
+                {contactInfo.phone}
+              </p>
             </li>
           </ul>
         </section>
-        <button onClick={handleDownload}>Download Resume</button>
       </main>
+      {visibilityButton && (
+        <div className="">
+          <button
+            onClick={handleDownloadPDF}
+            className="px-4 py-2 bg-blue-600 text-white rounded mr-2"
+          >
+            Download as PDF
+          </button>
+          <button
+            onClick={handleDownloadPNG}
+            className="px-4 py-2 bg-blue-600 text-white rounded"
+          >
+            Download as PNG
+          </button>
+        </div>
+      )}
     </div>
   );
 };

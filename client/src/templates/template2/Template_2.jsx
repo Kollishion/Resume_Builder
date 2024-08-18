@@ -1,4 +1,6 @@
 import { useState } from "react";
+import html2canvas from "html2canvas";
+import jsPDF from "jspdf";
 
 const Template_2 = () => {
   const initialResumeData = {
@@ -10,19 +12,19 @@ const Template_2 = () => {
         role: "Role, Company, Place",
         duration: "00/0000-00/0000",
         responsibilities: [
-          "Some Responsibilites",
-          "Some Responsibilites",
-          "Some Responsibilites",
+          "Some Responsibilities",
+          "Some Responsibilities",
+          "Some Responsibilities",
         ],
       },
       {
         role: "Role, Company, Location",
         duration: "00/0000-00/0000",
         responsibilities: [
-          "Some Responsibilites",
-          "Some Responsibilites",
-          "Some Responsibilites",
-          "Some Responsibilites",
+          "Some Responsibilities",
+          "Some Responsibilities",
+          "Some Responsibilities",
+          "Some Responsibilities",
         ],
       },
     ],
@@ -33,7 +35,7 @@ const Template_2 = () => {
         degree: "Degree, University",
       },
       {
-        school: " University ",
+        school: "University",
         years: "0000-0000",
         degree: "Degree, Major, University",
       },
@@ -59,199 +61,118 @@ const Template_2 = () => {
   };
 
   const [resumeData, setResumeData] = useState(initialResumeData);
+  const [visibilityButton, setVisibilityButton] = useState(true);
 
-  const handleChange = (section, index, field, value) => {
+  const handleBlur = (section, index, field, event) => {
+    const updatedValue = event.target.textContent;
     const updatedResumeData = { ...resumeData };
 
-    switch (section) {
-      case "experience":
-        updatedResumeData.experience[index][field] = value;
-        break;
-      case "education":
-        updatedResumeData.education[index][field] = value;
-        break;
-      case "references":
-        updatedResumeData.references[index][field] = value;
-        break;
-      default:
-        updatedResumeData[field] = value;
-        break;
+    if (index !== null && index !== undefined) {
+      updatedResumeData[section][index][field] = updatedValue;
+    } else {
+      updatedResumeData[section][field] = updatedValue;
     }
 
     setResumeData(updatedResumeData);
   };
 
-  const downloadResume = () => {
-    const resumeHTML = `
-      <html>
-        <head>
-          <title>${resumeData.name}'s Resume</title>
-          <link rel="stylesheet" type="text/css" href="style.css">
-        </head>
-        <body>
-          <div class="container">
-            <div class="header">
-              <h1>${resumeData.name}</h1>
-              <p>${resumeData.title}</p>
-            </div>
-            <div class="summary">
-              <h2>Professional Summary</h2>
-              <p>${resumeData.summary}</p>
-            </div>
-            <div class="experience">
-              <h2>Work Experience</h2>
-              <ul>
-                ${resumeData.experience
-                  .map(
-                    (exp) => `
-                  <li>
-                    <h3>${exp.role}</h3>
-                    <p>${exp.duration}</p>
-                    <ul>
-                      ${exp.responsibilities
-                        .map((resp) => `<li>${resp}</li>`)
-                        .join("")}
-                    </ul>
-                  </li>`
-                  )
-                  .join("")}
-              </ul>
-            </div>
-            <div class="education">
-              <h2>Education</h2>
-              <ul>
-                ${resumeData.education
-                  .map(
-                    (edu) => `
-                  <li>
-                    <h3>${edu.school}</h3>
-                    <p>${edu.years}</p>
-                    <p>${edu.degree}</p>
-                  </li>`
-                  )
-                  .join("")}
-              </ul>
-            </div>
-            <div class="skills">
-              <h2>Additional Skills</h2>
-              <ul>
-                ${resumeData.skills
-                  .map((skill) => `<li>${skill}</li>`)
-                  .join("")}
-              </ul>
-            </div>
-            <div class="languages">
-              <h2>Languages</h2>
-              <ul>
-                ${resumeData.languages
-                  .map(
-                    (lang) => `
-                  <li>
-                    <h3>${lang.language}</h3>
-                    <p>${lang.level}</p>
-                  </li>`
-                  )
-                  .join("")}
-              </ul>
-            </div>
-            <div class="references">
-              <h2>References</h2>
-              <ul>
-                ${resumeData.references
-                  .map(
-                    (ref) => `
-                  <li>
-                    <h3>${ref.name}</h3>
-                    <p>${ref.contact}</p>
-                  </li>`
-                  )
-                  .join("")}
-              </ul>
-            </div>
-          </div>
-        </body>
-      </html>
-    `;
+  const handleDownloadPDF = () => {
+    setVisibilityButton(false);
+    setTimeout(() => {
+      const resumeElement = document.querySelector(".resume-container");
+      if (resumeElement) {
+        html2canvas(resumeElement, { scale: 2 }).then((canvas) => {
+          const pdf = new jsPDF("p", "mm", "a4");
+          const imgData = canvas.toDataURL("image/png");
+          const imgWidth = 210; // A4 width in mm
+          const imgHeight = (canvas.height * imgWidth) / canvas.width;
+          const pageHeight = pdf.internal.pageSize.getHeight();
+          let position = 0;
+          pdf.addImage(imgData, "PNG", 0, position, imgWidth, imgHeight);
+          position -= pageHeight;
 
-    const blob = new Blob([resumeHTML], { type: "text/html" });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = `${resumeData.name}_Resume.html`;
-    a.click();
-    URL.revokeObjectURL(url);
+          while (position + imgHeight >= 0) {
+            pdf.addPage();
+            pdf.addImage(imgData, "PNG", 0, position, imgWidth, imgHeight);
+            position -= pageHeight;
+          }
+
+          pdf.save("resume.pdf");
+          setVisibilityButton(true);
+        });
+      } else {
+        console.error("Resume element not found!");
+        setVisibilityButton(true);
+      }
+    }, 0);
+  };
+
+  const handleDownloadPNG = () => {
+    setVisibilityButton(false);
+    setTimeout(() => {
+      const resumeElement = document.querySelector(".resume-container");
+      if (resumeElement) {
+        html2canvas(resumeElement).then((canvas) => {
+          const imgData = canvas.toDataURL("image/png");
+          const link = document.createElement("a");
+          link.href = imgData;
+          link.download = "resume.png";
+          link.click();
+          setVisibilityButton(true);
+        });
+      } else {
+        console.error("Resume element not found!");
+        setVisibilityButton(true);
+      }
+    }, 0);
   };
 
   return (
-    <div className="container">
-      <div className="header">
+    <div className="resume-container border-2 border-gray-900 p-5 mx-auto mt-5 w-[700px] bg-white shadow-lg">
+      <div className="header mb-5 p-5 border border-gray-300 bg-gray-100">
         <h1
           contentEditable="true"
-          onBlur={(e) =>
-            handleChange("header", null, "name", e.target.textContent)
-          }
+          className="text-4xl font-bold text-blue-600"
+          onBlur={(e) => handleBlur("name", null, null, e)}
         >
           {resumeData.name}
         </h1>
         <p
           contentEditable="true"
-          onBlur={(e) =>
-            handleChange("header", null, "title", e.target.textContent)
-          }
+          className="text-2xl"
+          onBlur={(e) => handleBlur("title", null, null, e)}
         >
           {resumeData.title}
         </p>
       </div>
-      <div className="summary">
-        <h2
-          contentEditable="true"
-          onBlur={(e) =>
-            handleChange("summary", null, "summary", e.target.textContent)
-          }
-        >
-          Professional Summary
-        </h2>
+      <div className="summary mb-5 p-5 border border-gray-300 bg-gray-100">
+        <h2 className="text-3xl font-bold">Professional Summary</h2>
         <p
           contentEditable="true"
-          onBlur={(e) =>
-            handleChange("summary", null, "summary", e.target.textContent)
-          }
+          onBlur={(e) => handleBlur("summary", null, null, e)}
         >
           {resumeData.summary}
         </p>
       </div>
-      <div className="experience">
-        <h2>Work Experience</h2>
-        <ul>
+      <div className="experience mb-5 p-5 border border-gray-300 bg-gray-100">
+        <h2 className="text-3xl font-bold">Work Experience</h2>
+        <ul className="list-none p-0">
           {resumeData.experience.map((exp, index) => (
-            <li key={index}>
+            <li key={index} className="mb-2">
               <h3
                 contentEditable="true"
-                onBlur={(e) =>
-                  handleChange(
-                    "experience",
-                    index,
-                    "role",
-                    e.target.textContent
-                  )
-                }
+                className="font-semibold"
+                onBlur={(e) => handleBlur("experience", index, "role", e)}
               >
                 {exp.role}
               </h3>
               <p
                 contentEditable="true"
-                onBlur={(e) =>
-                  handleChange(
-                    "experience",
-                    index,
-                    "duration",
-                    e.target.textContent
-                  )
-                }
+                onBlur={(e) => handleBlur("experience", index, "duration", e)}
               >
                 {exp.duration}
               </p>
-              <ul>
+              <ul className="list-disc ml-5">
                 {exp.responsibilities.map((resp, i) => (
                   <li
                     key={i}
@@ -261,12 +182,7 @@ const Template_2 = () => {
                         ...resumeData.experience[index].responsibilities,
                       ];
                       updatedResponsibilities[i] = e.target.textContent;
-                      handleChange(
-                        "experience",
-                        index,
-                        "responsibilities",
-                        updatedResponsibilities
-                      );
+                      handleBlur("experience", index, "responsibilities", e);
                     }}
                   >
                     {resp}
@@ -277,47 +193,27 @@ const Template_2 = () => {
           ))}
         </ul>
       </div>
-      <div className="education">
-        <h2>Education</h2>
-        <ul>
+      <div className="education mb-5 p-5 border border-gray-300 bg-gray-100">
+        <h2 className="text-3xl font-bold">Education</h2>
+        <ul className="list-none p-0">
           {resumeData.education.map((edu, index) => (
-            <li key={index}>
+            <li key={index} className="mb-2">
               <h3
                 contentEditable="true"
-                onBlur={(e) =>
-                  handleChange(
-                    "education",
-                    index,
-                    "school",
-                    e.target.textContent
-                  )
-                }
+                className="font-semibold"
+                onBlur={(e) => handleBlur("education", index, "school", e)}
               >
                 {edu.school}
               </h3>
               <p
                 contentEditable="true"
-                onBlur={(e) =>
-                  handleChange(
-                    "education",
-                    index,
-                    "years",
-                    e.target.text_content
-                  )
-                }
+                onBlur={(e) => handleBlur("education", index, "years", e)}
               >
                 {edu.years}
               </p>
               <p
                 contentEditable="true"
-                onBlur={(e) =>
-                  handleChange(
-                    "education",
-                    index,
-                    "degree",
-                    e.target.text_content
-                  )
-                }
+                onBlur={(e) => handleBlur("education", index, "degree", e)}
               >
                 {edu.degree}
               </p>
@@ -325,16 +221,14 @@ const Template_2 = () => {
           ))}
         </ul>
       </div>
-      <div className="skills">
-        <h2>Additional Skills</h2>
-        <ul>
+      <div className="skills mb-5 p-5 border border-gray-300 bg-gray-100">
+        <h2 className="text-3xl font-bold">Additional Skills</h2>
+        <ul className="list-none p-0">
           {resumeData.skills.map((skill, index) => (
-            <li key={index}>
+            <li key={index} className="mb-2">
               <div
                 contentEditable="true"
-                onBlur={(e) =>
-                  handleChange("skills", null, "skills", e.target.text_content)
-                }
+                onBlur={(e) => handleBlur("skills", index, null, e)}
               >
                 {skill}
               </div>
@@ -342,34 +236,21 @@ const Template_2 = () => {
           ))}
         </ul>
       </div>
-      <div className="languages">
-        <h2>Languages</h2>
-        <ul>
+      <div className="languages mb-5 p-5 border border-gray-300 bg-gray-100">
+        <h2 className="text-3xl font-bold">Languages</h2>
+        <ul className="list-none p-0">
           {resumeData.languages.map((lang, index) => (
-            <li key={index}>
+            <li key={index} className="mb-2">
               <h3
                 contentEditable="true"
-                onBlur={(e) =>
-                  handleChange(
-                    "languages",
-                    index,
-                    "language",
-                    e.target.text_content
-                  )
-                }
+                className="font-semibold"
+                onBlur={(e) => handleBlur("languages", index, "language", e)}
               >
                 {lang.language}
               </h3>
               <p
                 contentEditable="true"
-                onBlur={(e) =>
-                  handleChange(
-                    "languages",
-                    index,
-                    "level",
-                    e.target.text_content
-                  )
-                }
+                onBlur={(e) => handleBlur("languages", index, "level", e)}
               >
                 {lang.level}
               </p>
@@ -377,34 +258,21 @@ const Template_2 = () => {
           ))}
         </ul>
       </div>
-      <div className="references">
-        <h2>References</h2>
-        <ul>
+      <div className="references mb-5 p-5 border border-gray-300 bg-gray-100">
+        <h2 className="text-3xl font-bold">References</h2>
+        <ul className="list-none p-0">
           {resumeData.references.map((ref, index) => (
-            <li key={index}>
+            <li key={index} className="mb-2">
               <h3
                 contentEditable="true"
-                onBlur={(e) =>
-                  handleChange(
-                    "references",
-                    index,
-                    "name",
-                    e.target.text_content
-                  )
-                }
+                className="font-semibold"
+                onBlur={(e) => handleBlur("references", index, "name", e)}
               >
                 {ref.name}
               </h3>
               <p
                 contentEditable="true"
-                onBlur={(e) =>
-                  handleChange(
-                    "references",
-                    index,
-                    "contact",
-                    e.target.text_content
-                  )
-                }
+                onBlur={(e) => handleBlur("references", index, "contact", e)}
               >
                 {ref.contact}
               </p>
@@ -412,9 +280,22 @@ const Template_2 = () => {
           ))}
         </ul>
       </div>
-      <button className="download-button" onClick={downloadResume}>
-        Download Resume
-      </button>
+      {visibilityButton && (
+        <div className="flex space-x-4">
+          <button
+            className="download-button bg-blue-600 text-white py-2 px-4 rounded hover:bg-blue-700"
+            onClick={handleDownloadPDF}
+          >
+            Download as PDF
+          </button>
+          <button
+            className="download-button bg-blue-600 text-white py-2 px-4 rounded hover:bg-blue-700"
+            onClick={handleDownloadPNG}
+          >
+            Download as PNG
+          </button>
+        </div>
+      )}
     </div>
   );
 };

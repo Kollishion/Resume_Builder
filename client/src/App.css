@@ -8,3 +8,98 @@ body {
   height: 100%;
   width: 100%;
 }
+
+.resume-builder .container {
+  background-color: white;
+  padding: 30px;
+  border-radius: 10px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  width: 90%; /* Adjusting to fit most of the screen */
+  max-width: 400px; /* Adjusting max-width for smaller screens */
+  margin: 0 auto; /* Center the content */
+}
+
+.resume-builder h1 {
+  text-align: center;
+  margin-bottom: 20px;
+  color: #333;
+}
+
+.resume-builder .image-container {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 20px;
+}
+
+.resume-builder .image-container img {
+  width: 80%; /* Adjust image size */
+  border-radius: 10px;
+}
+
+.resume-builder .features {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.resume-builder .features li {
+  display: flex;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.resume-builder .features li::before {
+  content: "";
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background-color: #800080;
+  margin-right: 10px;
+}
+
+.resume-builder button {
+  background-color: #800080;
+  color: white;
+  padding: 12px 20px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 16px;
+  margin-top: 20px;
+  width: 100%; /* Adjust button width */
+}
+
+.resume-builder button:hover {
+  background-color: #660066;
+}
+
+.resume-builder .footer {
+  text-align: center;
+  margin-top: 20px;
+  font-size: 14px;
+  padding-top: 10px;
+  border-top: 1px solid #ddd;
+}
+
+.resume-builder .footer a {
+  color: #333;
+  text-decoration: none;
+}
+
+.resume-builder .footer a:hover {
+  text-decoration: underline;
+}
+
+/* Media Queries */
+@media (min-width: 600px) {
+  .resume-builder .container {
+    max-width: 600px; /* Maintain larger max-width on medium screens */
+  }
+}
+
+@media (min-width: 768px) {
+  .resume-builder .container {
+    max-width: 800px; /* Maintain larger max-width on large screens */
+  }
+}
