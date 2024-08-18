@@ -2,11 +2,6 @@ import User from "../models/user.js";
 import { hashPassword, comparePassword } from "../helpers/auth.js";
 import jwt from "jsonwebtoken";
 
-// Test
-export const test = (req, res) => {
-  res.json("Test is working");
-};
-
 // Register Endpoint
 export const registerUser = async (req, res) => {
   try {

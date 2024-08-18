@@ -1,7 +1,6 @@
 import express from "express";
 import cors from "cors";
 import {
-  test,
   registerUser,
   loginUser,
   getProfile,
@@ -15,8 +14,6 @@ router.use(
     origin: "http://localhost:5173",
   })
 );
-
-router.get("/", test);
 
 router.post("/register", registerUser);
 router.post("/login", loginUser);
