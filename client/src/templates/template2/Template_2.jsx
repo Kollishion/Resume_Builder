@@ -63,7 +63,7 @@ const Template_2 = () => {
   const [resumeData, setResumeData] = useState(initialResumeData);
   const [visibilityButton, setVisibilityButton] = useState(true);
 
-  const handleBlur = (section, index, field, event) => {
+  const handleInput = (section, index, field, event) => {
     const updatedValue = event.target.textContent;
     const updatedResumeData = { ...resumeData };
 
@@ -133,14 +133,14 @@ const Template_2 = () => {
         <h1
           contentEditable="true"
           className="text-4xl font-bold text-blue-600"
-          onBlur={(e) => handleBlur("name", null, null, e)}
+          onInput={(e) => handleInput("name", null, null, e)}
         >
           {resumeData.name}
         </h1>
         <p
           contentEditable="true"
           className="text-2xl"
-          onBlur={(e) => handleBlur("title", null, null, e)}
+          onInput={(e) => handleInput("title", null, null, e)}
         >
           {resumeData.title}
         </p>
@@ -149,7 +149,7 @@ const Template_2 = () => {
         <h2 className="text-3xl font-bold">Professional Summary</h2>
         <p
           contentEditable="true"
-          onBlur={(e) => handleBlur("summary", null, null, e)}
+          onInput={(e) => handleInput("summary", null, null, e)}
         >
           {resumeData.summary}
         </p>
@@ -162,13 +162,13 @@ const Template_2 = () => {
               <h3
                 contentEditable="true"
                 className="font-semibold"
-                onBlur={(e) => handleBlur("experience", index, "role", e)}
+                onInput={(e) => handleInput("experience", index, "role", e)}
               >
                 {exp.role}
               </h3>
               <p
                 contentEditable="true"
-                onBlur={(e) => handleBlur("experience", index, "duration", e)}
+                onInput={(e) => handleInput("experience", index, "duration", e)}
               >
                 {exp.duration}
               </p>
@@ -177,12 +177,12 @@ const Template_2 = () => {
                   <li
                     key={i}
                     contentEditable="true"
-                    onBlur={(e) => {
+                    onInput={(e) => {
                       const updatedResponsibilities = [
                         ...resumeData.experience[index].responsibilities,
                       ];
                       updatedResponsibilities[i] = e.target.textContent;
-                      handleBlur("experience", index, "responsibilities", e);
+                      handleInput("experience", index, "responsibilities", e);
                     }}
                   >
                     {resp}
@@ -201,19 +201,19 @@ const Template_2 = () => {
               <h3
                 contentEditable="true"
                 className="font-semibold"
-                onBlur={(e) => handleBlur("education", index, "school", e)}
+                onInput={(e) => handleInput("education", index, "school", e)}
               >
                 {edu.school}
               </h3>
               <p
                 contentEditable="true"
-                onBlur={(e) => handleBlur("education", index, "years", e)}
+                onInput={(e) => handleInput("education", index, "years", e)}
               >
                 {edu.years}
               </p>
               <p
                 contentEditable="true"
-                onBlur={(e) => handleBlur("education", index, "degree", e)}
+                onInput={(e) => handleInput("education", index, "degree", e)}
               >
                 {edu.degree}
               </p>
@@ -228,7 +228,7 @@ const Template_2 = () => {
             <li key={index} className="mb-2">
               <div
                 contentEditable="true"
-                onBlur={(e) => handleBlur("skills", index, null, e)}
+                onInput={(e) => handleInput("skills", index, null, e)}
               >
                 {skill}
               </div>
@@ -244,13 +244,13 @@ const Template_2 = () => {
               <h3
                 contentEditable="true"
                 className="font-semibold"
-                onBlur={(e) => handleBlur("languages", index, "language", e)}
+                onInput={(e) => handleInput("languages", index, "language", e)}
               >
                 {lang.language}
               </h3>
               <p
                 contentEditable="true"
-                onBlur={(e) => handleBlur("languages", index, "level", e)}
+                onInput={(e) => handleInput("languages", index, "level", e)}
               >
                 {lang.level}
               </p>
@@ -266,13 +266,13 @@ const Template_2 = () => {
               <h3
                 contentEditable="true"
                 className="font-semibold"
-                onBlur={(e) => handleBlur("references", index, "name", e)}
+                onInput={(e) => handleInput("references", index, "name", e)}
               >
                 {ref.name}
               </h3>
               <p
                 contentEditable="true"
-                onBlur={(e) => handleBlur("references", index, "contact", e)}
+                onInput={(e) => handleInput("references", index, "contact", e)}
               >
                 {ref.contact}
               </p>
