@@ -1,6 +1,7 @@
 import express from "express";
 import cors from "cors";
-import feedbackController from "../controllers/feedbackController.js";
+import editProfileController from "../controllers/editProfileController.js";
+
 const router = express.Router();
 
 router.use(
@@ -10,6 +11,6 @@ router.use(
   })
 );
 
-router.post("/sendFeedback", feedbackController);
+router.put("/:userId", editProfileController);
 
 export default router;

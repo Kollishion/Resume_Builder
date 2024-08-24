@@ -37,7 +37,7 @@ function DropdownNavbar() {
                   Logout
                 </Link>
                 <Link
-                  to="/edit-profile"
+                  to="/profile"
                   className="text-gray-700 block px-4 py-2 text-sm hover:bg-gray-100"
                   role="menuitem"
                   id="menu-item-1"

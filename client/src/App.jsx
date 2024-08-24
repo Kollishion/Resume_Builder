@@ -61,7 +61,7 @@ function App() {
             }
           />
           <Route
-            path="/edit-profile"
+            path="/profile"
             element={
               <PrivateRoute>
                 <EditProfile />
