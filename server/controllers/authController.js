@@ -58,7 +58,7 @@ export const loginUser = async (req, res) => {
       jwt.sign(
         { email: user.email, id: user._id, name: user.name },
         process.env.JWT_SECRET,
-        {},
+        { expiresIn: "1h" },
         (err, token) => {
           if (err) {
             throw err;
@@ -66,7 +66,6 @@ export const loginUser = async (req, res) => {
           res
             .cookie("token", token, {
               httpOnly: true,
-              secure: process.env.NODE_ENV === "production",
             })
             .json(user);
         }
@@ -84,11 +83,19 @@ export const loginUser = async (req, res) => {
 
 export const getProfile = async (req, res) => {
   const { token } = req.cookies;
+  console.log("Token received:", token); // Log the token
+
   if (token) {
     jwt.verify(token, process.env.JWT_SECRET, {}, (err, user) => {
+      if (err) {
+        console.log("Token verification failed:", err);
+        return res.json(null);
+      }
+      console.log("User authenticated:", user);
       res.json(user);
     });
   } else {
+    console.log("No token found");
     res.json(null);
   }
 };

@@ -9,16 +9,19 @@ export function UserContextProvider({ children }) {
 
   useEffect(() => {
     const fetchProfile = async () => {
-      try {
-        const { data } = await axios.get("/profile");
-        setUser(data);
-      } catch (err) {
-        console.error("Error fetching profile: ", err);
+      if (!user) {
+        try {
+          const { data } = await axios.get("/profile");
+          setUser(data);
+        } catch (err) {
+          console.error("Error fetching profile: ", err);
+          setUser(null);
+        }
       }
     };
 
     fetchProfile();
-  }, []);
+  }, [user]);
 
   return (
     <UserContext.Provider value={{ user, setUser }}>

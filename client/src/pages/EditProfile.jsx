@@ -1,14 +1,26 @@
 import { useState } from "react";
+import { useContext } from "react";
+import { UserContext } from "../../context/userContext";
 
 function EditProfile() {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
-  const [bio, setBio] = useState("");
+
+  const { user } = useContext(UserContext);
+
+  if (!user) {
+    return <div>Loading...</div>;
+  }
+
+  const { username, email_user } = user;
+  console.log(username, email_user);
 
   const handleNameChange = (e) => setName(e.target.value);
   const handleEmailChange = (e) => setEmail(e.target.value);
-  const handleBioChange = (e) => setBio(e.target.value);
 
+  const handleEdit = (e) => {
+    e.preventDefault();
+  };
   const handleSubmit = (e) => {
     e.preventDefault();
   };
@@ -50,31 +62,26 @@ function EditProfile() {
         <div className="mb-4">
           <label
             className="block text-gray-700 text-sm font-bold mb-2"
-            htmlFor="bio"
-          >
-            Bio
-          </label>
-          <textarea
-            className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-            id="bio"
-            value={bio}
-            onChange={handleBioChange}
-          />
-        </div>
-        <div className="mb-4">
-          <label
-            className="block text-gray-700 text-sm font-bold mb-2"
             htmlFor="profile-picture"
           >
             Profile Picture
           </label>
         </div>
-        <button
-          className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
-          type="submit"
-        >
-          Save Changes
-        </button>
+        <div className="flex justify-center gap-5">
+          <button
+            className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+            type="button"
+            onClick={handleEdit}
+          >
+            Edit Changes
+          </button>
+          <button
+            className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+            type="submit"
+          >
+            Save Changes
+          </button>
+        </div>
       </form>
     </div>
   );
